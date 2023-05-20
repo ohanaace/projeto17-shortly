@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt"
-import { db } from "../database/database.connection.js"
+import { findUserDB } from "../repositories/signing.repositories.js"
 
 export async function validateSignUp(req, res, next) {
     const { email } = req.body
 
-    const existingEmail = await db.query(`SELECT * FROM users WHERE email=$1`, [email])
+    const existingEmail = await findUserDB(email)
     if (existingEmail.rowCount) return res.status(409).send({ message: "E-mail já cadastrado" })
     next()
 }
@@ -12,7 +12,7 @@ export async function validateSignUp(req, res, next) {
 export async function validateSignIn(req, res, next) {
     const { email, password } = req.body
 
-    const existingEmail = await db.query(`SELECT * FROM users WHERE email=$1`, [email])
+    const existingEmail = await findUserDB(email)
     if (!existingEmail.rowCount) return res.status(401).send({ message: "Usuário e/ou senha inválidos" })
     const correctPassword = bcrypt.compareSync(password, existingEmail.rows[0].password)
     if(!correctPassword) return res.status(401).send({ message: "Usuário e/ou senha inválidos" })
