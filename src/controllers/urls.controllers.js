@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import { nanoid } from "nanoid"
-import { createShortLinkDB, getURLBYIdDB } from "../repositories/url.repositories.js"
+import { createShortLinkDB, getURLBYIdDB, openShortUrlDB } from "../repositories/url.repositories.js"
 
 export async function postShortenURL(req, res) {
     const { url } = req.body
@@ -33,8 +33,13 @@ export async function getURLById(req, res) {
 }
 
 export async function getOpenShortURL(req, res) {
-    try {
+    const {shortUrl} = req.params
 
+    try {
+        const result = await openShortUrlDB(shortUrl)
+        if(!result.rowCount) return res.status(404).send({message: "URL não encontrada"})
+        const {linkUrl} = result.rows[0]
+        res.redirect(linkUrl)
     } catch (error) {
         res.status(500).send(error.message)
     }

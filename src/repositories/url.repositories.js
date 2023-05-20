@@ -9,5 +9,14 @@ export function createShortLinkDB({url, shortUrl, userId}){
 }
 
 export function getURLBYIdDB(id){
-    return db.query(`SELECT id AS "urlId", "linkUrl", "shortenUrl" FROM links WHERE id=$1`, [id])
+    return db.query(`SELECT id AS "urlId", "linkUrl", "shortenUrl" FROM links WHERE id=$1;`, [id])
+}
+
+export function openShortUrlDB(shortUrl){
+    return db.query(`
+    UPDATE links 
+        SET views = views + 1 
+        WHERE "shortenUrl"=$1
+        RETURNING "linkUrl";`
+        , [shortUrl])
 }
