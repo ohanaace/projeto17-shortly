@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { db } from "../database/database.connection.js"
+import { validateTokenDB } from "../repositories/signing.repositories.js"
 
 export async function validateAuthentication(req, res, next) {
     const { authorization } = req.headers
@@ -7,8 +7,9 @@ export async function validateAuthentication(req, res, next) {
 
     if (!token) return res.sendStatus(401)
     const secretKey = process.env.SECRET_KEY
-    const user = await db.query(`SELECT * FROM users WHERE token=$1`, [token])
+    const user = await validateTokenDB(token)
     if (!user.rowCount || !jwt.verify(token, secretKey)) return res.sendStatus(401)
+
     res.locals.token = token
     next()
 

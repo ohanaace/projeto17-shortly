@@ -15,7 +15,7 @@ export async function postSignUp(req, res) {
 export async function postSignIn(req, res) {
     const { userId, userName } = res.locals
     try {
-        const expiresIn = '1d'
+        const expiresIn = '1w'
         const secretKey = process.env.SECRET_KEY
         const token = jwt.sign({ userId, userName }, secretKey, { expiresIn })
         await createSignInDB({token, userId})
