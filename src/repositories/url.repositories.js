@@ -20,3 +20,11 @@ export function openShortUrlDB(shortUrl){
         RETURNING "linkUrl";`
         , [shortUrl])
 }
+
+export function getUrlOwnerDB(id){
+    return db.query(`SELECT "userId" FROM links WHERE id=$1;`, [id])
+}
+
+export function deleteUrlByIdDB(id){
+    return db.query(`DELETE FROM links WHERE id=$1`, [id])
+}

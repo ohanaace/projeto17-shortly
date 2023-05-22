@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { createSignInDB, createSignUpDB } from "../repositories/signing.repositories.js"
+import SECRET_KEY from "../constants/secretKey.constant.js"
 
 export async function postSignUp(req, res) {
     const { name, email, password } = req.body
@@ -16,8 +17,7 @@ export async function postSignIn(req, res) {
     const { userId, userName } = res.locals
     try {
         const expiresIn = '1w'
-        const secretKey = process.env.SECRET_KEY
-        const token = jwt.sign({ userId, userName }, secretKey, { expiresIn })
+        const token = jwt.sign({ userId, userName }, SECRET_KEY, { expiresIn })
         await createSignInDB({token, userId})
         res.send({token: token})
     } catch (error) {
